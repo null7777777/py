@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <meta name="description" content=""/>
+    <meta name="author" content=""/>
+    <title>注册</title>
+    <link href="static/css/styles.css" rel="stylesheet"/>
+</head>
+<style>
+    .col-lg-7 {
+        opacity: .8;
+    }
+
+
+    .bg-primary {
+        background-image: url("/static/img/登陆.jpg");
+        background-size: cover;
+    }
+</style>
+<body class="bg-primary">
+<div id="layoutAuthentication">
+    <div id="layoutAuthentication_content">
+        <main>
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-7">
+                        <div class="card shadow-lg border-0 rounded-lg mt-5">
+                            <div class="card-header"><h3 class="text-center font-weight-light my-4">创建账户</h3></div>
+                            <div class="card-body">
+
+                                <!-- 模态框 -->
+                                <div class="modal fade" id="errorModal" tabindex="-1" role="dialog"
+                                     aria-labelledby="errorModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="errorModalLabel">错误</h5>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <!-- 这里显示错误消息 -->
+                                                {% if error_message %}
+                                                    {{ error_message }}
+                                                {% endif %}
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                                    关闭
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <form method="post" action="/register">
+                                    <div class="row mb-3">
+                                        <div class="col-md-12">
+                                            <div class="form-floating mb-3 mb-md-0">
+                                                <input class="form-control" name="email" id="inputFirstName" type="text"
+                                                       placeholder="请输入邮箱"/>
+                                                <label for="inputFirstName">邮箱</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <input class="form-control" id="exampleInputPassword" name="password"
+                                               type="password"
+                                               placeholder="请输入密码"/>
+                                        <label for="inputEmail">密码</label>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-12">
+                                            <div class="form-floating mb-3 mb-md-0">
+                                                <input class="form-control" id="exampleInputPasswordChecked"
+                                                       name="passwordChecked"
+                                                       type="password" placeholder="确认密码"/>
+                                                <label for="inputPassword">确认密码</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-4 mb-0">
+                                        <div class="d-grid">
+                                            <button class="btn btn-primary btn-user btn-block">
+                                                注册
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="card-footer text-center py-3">
+                                <div class="small"><a href="/login">已有账号? 去登录</a></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+<script src="/static/vendor/jquery/jquery.min.js"></script>
+<script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // 邮箱正则表达式
+        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        // 为表单的提交按钮添加点击事件监听器
+        $('.btn-user').on('click', function (e) {
+            e.preventDefault(); // 阻止表单默认提交行为
+            var email = $('#inputFirstName').val().trim();
+            var password = $('#exampleInputPassword').val().trim();
+            var passwordChecked = $('#exampleInputPasswordChecked').val().trim();
+
+            // 检查邮箱和密码、确认密码输入框是否为空
+            if (email === '' || password === '' || passwordChecked === '') {
+                $('#errorModalLabel').text('错误：');
+                $('#errorModal .modal-body').text('请填写邮箱和密码！');
+                $('#errorModal').modal('show');
+            } else if (!emailRegex.test(email)) {
+                // 如果邮箱格式不正确，在模态窗口中显示错误消息
+                $('#errorModalLabel').text('错误：');
+                $('#errorModal .modal-body').text('请输入有效的邮箱地址！');
+                $('#errorModal').modal('show');
+            } else if (password.length < 6) {
+                // 如果密码长度小于6位，在模态窗口中显示错误消息
+                $('#errorModalLabel').text('错误：');
+                $('#errorModal .modal-body').text('密码必须至少为6位！');
+                $('#errorModal').modal('show');
+            } else if (password !== passwordChecked) {
+                // 如果两次输入的密码不一致，在模态窗口中显示错误消息
+                $('#errorModalLabel').text('错误：');
+                $('#errorModal .modal-body').text('两次输入的密码不一致！');
+                $('#errorModal').modal('show');
+            } else {
+                // 如果所有验证都通过，提交表单
+                $('form').submit();
+            }
+        });
+
+        // 检查是否有错误消息并显示模态框
+        var errorMessage = '{{ error_message }}';
+        if (errorMessage) {
+            $('#errorModalLabel').text('错误：');
+            $('#errorModal .modal-body').html(errorMessage);
+            $('#errorModal').modal('show');
+        }
+    });
+</script>
+</body>
+</html>
+
